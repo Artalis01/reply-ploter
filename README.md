@@ -1,8 +1,8 @@
-# 🎫 Support tickets template
+# 🎫 X Reply Plotter
 
-A simple Streamlit app showing an internal tool that lets you create, manage, and visualize support tickets. 
+A Streamlit app showing a distribution plot of replies stance that focus on president election topic
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://support-tickets-template.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://repploter.streamlit.app/)
 
 ### How to run it on your own machine
 
