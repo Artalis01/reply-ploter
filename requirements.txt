@@ -5,6 +5,4 @@ scipy
 nltk
 sastrawi
 scikit-learn
-lxml
-chromium
 webdriver-manager
