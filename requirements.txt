@@ -1,1 +1,7 @@
 streamlit
+seleniumbase
+joblib
+scipy
+nltk
+sastrawi
+scikit-learn

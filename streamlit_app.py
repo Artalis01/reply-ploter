@@ -1,172 +1,264 @@
 import datetime
+import joblib
 import random
-
+import re
+import time as t
 import altair as alt
 import numpy as np
 import pandas as pd
+import preprocess_text as pt
 import streamlit as st
+import xcrawler as xc
 
 # Show app title and description.
-st.set_page_config(page_title="Support tickets", page_icon="🎫")
-st.title("🎫 Support tickets")
+st.set_page_config(page_title="Repploter", page_icon="🎫")
+st.title("🎫 Repploter")
 st.write(
     """
-    This app shows how you can build an internal tool in Streamlit. Here, we are 
-    implementing a support ticket workflow. The user can create a ticket, edit 
-    existing tickets, and view some statistics.
+    Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari sosial media X dengan
+    topik utama Pemilihan Umum Presiden Indonesia.
     """
 )
+topic = []
+tweet_replies = []
+stances = []
 
-# Create a random Pandas dataframe with existing tickets.
-if "df" not in st.session_state:
-
-    # Set seed for reproducibility.
+if 'stance_df' not in st.session_state:
     np.random.seed(42)
-
-    # Make up some fake issue descriptions.
-    issue_descriptions = [
-        "Network connectivity issues in the office",
-        "Software application crashing on startup",
-        "Printer not responding to print commands",
-        "Email server downtime",
-        "Data backup failure",
-        "Login authentication problems",
-        "Website performance degradation",
-        "Security vulnerability identified",
-        "Hardware malfunction in the server room",
-        "Employee unable to access shared files",
-        "Database connection failure",
-        "Mobile application not syncing data",
-        "VoIP phone system issues",
-        "VPN connection problems for remote employees",
-        "System updates causing compatibility issues",
-        "File server running out of storage space",
-        "Intrusion detection system alerts",
-        "Inventory management system errors",
-        "Customer data not loading in CRM",
-        "Collaboration tool not sending notifications",
+    st.session_state.empty_content = False
+    st.session_state.tweet_replies = tweet_replies
+    st.session_state.info = 'empty url'
+    reply_contents = [
+        "Mantab!",
+        "Yang benar saja",
+        "Apa iya?",
+        "Beneran",
+        "Gitu juga bole",
+        "Ah masa",
+        "Gas pol",
+        "Gaskeun",
+        "Setuju tapi gimana ya",
+        "Ah omdo",
+        "Gas gak sih?",
+        "Iya kah?",
+        "Nah seharusnya gini gak sih?"
     ]
 
-    # Generate the dataframe with 100 rows/tickets.
+    stances = [
+        "Mendukung",
+        "Netral",
+        "Menentang",
+        "Netral",
+        "Mendukung",
+        "Menentang",
+        "Mendukung",
+        "Mendukung",
+        "Netral",
+        "Menentang",
+        "Mendukung",
+        "Netral",
+        "Mendukung"
+    ]
+
     data = {
-        "ID": [f"TICKET-{i}" for i in range(1100, 1000, -1)],
-        "Issue": np.random.choice(issue_descriptions, size=100),
-        "Status": np.random.choice(["Open", "In Progress", "Closed"], size=100),
-        "Priority": np.random.choice(["High", "Medium", "Low"], size=100),
-        "Date Submitted": [
-            datetime.date(2023, 6, 1) + datetime.timedelta(days=random.randint(0, 182))
-            for _ in range(100)
-        ],
+        "username": [f"USER-{i}" for i in range(2100, 2087, -1)],
+        "content": reply_contents,
+        "stance": stances,
+        "date": [
+            datetime.date(2024, 1, 1) + datetime.timedelta(days=random.randint(0, 200))
+            for _ in range(13)
+            ],
+        "likes": [random.randint(1, 100) for _ in range(13)],
     }
-    df = pd.DataFrame(data)
+    topic = {
+        'name': 'John',
+        'content': 'Hari yang indah!',
+    }
+    stance_df = pd.DataFrame(data)
+    st.session_state.stance_df = stance_df
+    st.session_state.topic = topic
 
-    # Save the dataframe in session state (a dictionary-like object that persists across
-    # page runs). This ensures our data is persisted when the app updates.
-    st.session_state.df = df
+url = st.text_input('URL')
+submit_button = st.button("Submit")
 
+if url != '':
+    if url == "xclogout":
+        pass
+    elif url == 'xclogin':
+        xc.xcrawl('https://x.com/', check_login_status=True)
+    elif not re.match(r'^https:\/\/x\.com(?:\/\S*)?$', url):
+        st.warning('"Pastikan Link URL sudah benar dan berasal dari sosial media X atau Twitter!"')
+        st.text("Contoh Format URL:\n https://x.com/user/status/888xxxx")
+else:
+    st.info('Masukkan Link URL pada kolom yang disediakan')
 
-# Show a section to add a new ticket.
-st.header("Add a ticket")
+# in submit buttton add login function separate from xcrawl
 
-# We're adding tickets via an `st.form` and some input widgets. If widgets are used
-# in a form, the app will only rerun once the submit button is pressed.
-with st.form("add_ticket_form"):
-    issue = st.text_area("Describe the issue")
-    priority = st.selectbox("Priority", ["High", "Medium", "Low"])
-    submitted = st.form_submit_button("Submit")
+# Action on button press
+if submit_button:
+    if url != "":
+        if url == "xclogout":
+            xc.logout()
+        elif url == "xclogin":
+            xc.xcrawl('https://x.com/', check_login_status=True)
+        elif re.match(r'^https:\/\/x\.com(?:\/\S*)?$', url):
+            start_time = t.time()
+            pbar = st.progress(0, text='Sedang memuat data')
+            topic, tweet_replies = xc.xcrawl(url, pbar)
 
-if submitted:
-    # Make a dataframe for the new ticket and append it to the dataframe in session
-    # state.
-    recent_ticket_number = int(max(st.session_state.df.ID).split("-")[1])
-    today = datetime.datetime.now().strftime("%m-%d-%Y")
-    df_new = pd.DataFrame(
-        [
-            {
-                "ID": f"TICKET-{recent_ticket_number+1}",
-                "Issue": issue,
-                "Status": "Open",
-                "Priority": priority,
-                "Date Submitted": today,
+            if topic != None:
+                st.session_state.empty_content = False
+                st.session_state.topic = topic
+                st.session_state.tweet_replies = tweet_replies
+                if tweet_replies == 'empty':
+                    pbar.empty()
+                    with st.status(label="Tidak ada reply yang ditemukan") as status:
+                        status.update(state='complete')
+                    
+                else:
+                    pbar.progress(int((5/11)*100), text='(5/11) AI sedang bekerja')
+                    features = pt.preprocess(pbar, topic, tweet_replies)
+                    
+                    pbar.progress(int((10/11)*100), text='(10/11) AI sedang memprediksi stance')
+                    model = joblib.load("resources/model/model_svm.joblib")
+                    stances = model.predict(features)
+
+                    pbar.progress(int((11/11)*100), text='(11/11) Selesai')
+                    pbar.empty()
+
+                    end_time = t.time()
+                    time_spent = end_time - start_time
+                    label = "Proses selesai dalam"+" "+str(round(time_spent,2))+" "+"detik!" 
+                    with st.status("Plotting...") as status:
+                        status.update(label=label, state='complete')
+
+                    adjusted_stances = []
+                    # adjust stance value
+                    for i in range(len(stances)):
+                        stance = str(stances[i])
+                        if stance == 'favor':
+                            adjusted_stances.append('Mendukung')
+                        elif stance == 'against':
+                            adjusted_stances.append('Menentang')
+                        else:
+                            adjusted_stances.append('Netral')
+
+                    # add predicted stances into replies data
+                    for i, reply in enumerate(tweet_replies):
+                        reply['stance'] = adjusted_stances[i]
+                    
+                    stance_df = pd.DataFrame(tweet_replies)
+                    st.session_state.stance_df = stance_df 
+            
+            else:
+                st.session_state.empty_content = True
+            pbar.empty()
+        else:
+            st.session_state.empty_content = True
+    else:
+        st.session_state.empty_content = True
+
+if 'empty_content' in st.session_state:
+    if st.session_state.empty_content:
+        st.image('resources/images/no_content.png', use_column_width=True) 
+
+    elif not st.session_state.empty_content:
+        st.header('Topik')
+        st.markdown(f"**User :**")
+        st.markdown(st.session_state.topic['name'])
+        st.markdown('**Tweet:**')
+        st.markdown(st.session_state.topic['content'])
+
+        if st.session_state.tweet_replies == 'empty':
+            st.info("Tidak ada reply dalam tweet")
+
+        else:
+            # get most liked reply for each stance
+            favor_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Mendukung']
+            against_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Menentang']
+            none_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Netral']
+
+            liked_favor = favor_df.loc[favor_df['likes'].idxmax()]
+            liked_against = against_df.loc[against_df['likes'].idxmax()]
+            liked_none = none_df.loc[none_df['likes'].idxmax()]
+
+            # show most liked reply for each stance
+            st.header('Komentar Terfavorit')
+            if not len(liked_favor) < 1:
+                st.markdown("**Mendukung:**")
+                st.info(liked_favor['content'])
+            if not len(liked_against) < 1:
+                st.markdown("**Menentang:**")
+                st.error(liked_against['content'])
+            if not len(liked_none) < 1:
+                st.markdown("**Netral:**")
+                st.success(liked_none['content'])
+
+            # specify columns to be displayed
+            columns_to_show = ['content', 'stance', 'date']
+
+            renamed_columns = {
+                'content': 'Reply',
+                'stance': 'Stance',
+                'date': 'Tanggal',
             }
-        ]
-    )
 
-    # Show a little success message.
-    st.write("Ticket submitted! Here are the ticket details:")
-    st.dataframe(df_new, use_container_width=True, hide_index=True)
-    st.session_state.df = pd.concat([df_new, st.session_state.df], axis=0)
+            renamed_df = st.session_state.stance_df[columns_to_show].rename(columns=renamed_columns)
 
-# Show section to view and edit existing tickets in a table.
-st.header("Existing tickets")
-st.write(f"Number of tickets: `{len(st.session_state.df)}`")
+            # Show reply list
+            st.header('Daftar Reply')
+            st.write(f"Total Reply: `{len(st.session_state.stance_df)}`")
 
-st.info(
-    "You can edit the tickets by double clicking on a cell. Note how the plots below "
-    "update automatically! You can also sort the table by clicking on the column headers.",
-    icon="✍️",
-)
+            # define column color for stance
+            def highlight_stance(val):
+                if val == 'Mendukung':
+                    return 'background-color: rgba(0, 0, 255, 0.3); color: black'
+                if val == 'Menentang':
+                    return 'background-color: rgba(255, 0, 0, 0.3); color: black'
+                return ''  # No color for other values
 
-# Show the tickets dataframe with `st.data_editor`. This lets the user edit the table
-# cells. The edited data is returned as a new dataframe.
-edited_df = st.data_editor(
-    st.session_state.df,
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        "Status": st.column_config.SelectboxColumn(
-            "Status",
-            help="Ticket status",
-            options=["Open", "In Progress", "Closed"],
-            required=True,
-        ),
-        "Priority": st.column_config.SelectboxColumn(
-            "Priority",
-            help="Priority",
-            options=["High", "Medium", "Low"],
-            required=True,
-        ),
-    },
-    # Disable editing the ID and Date Submitted columns.
-    disabled=["ID", "Date Submitted"],
-)
+            styled_df = renamed_df.style.map(highlight_stance, subset=['Stance'])
 
-# Show some metrics and charts about the ticket.
-st.header("Statistics")
+            # show dataframe
+            # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
-# Show metrics side by side using `st.columns` and `st.metric`.
-col1, col2, col3 = st.columns(3)
-num_open_tickets = len(st.session_state.df[st.session_state.df.Status == "Open"])
-col1.metric(label="Number of open tickets", value=num_open_tickets, delta=10)
-col2.metric(label="First response time (hours)", value=5.2, delta=-1.5)
-col3.metric(label="Average resolution time (hours)", value=16, delta=2)
+            # Show the replies dataframe
+            show_df = st.data_editor(
+                renamed_df,
+                use_container_width=True,
+                hide_index=True,
+                disabled=['Reply','Stance','Tanggal']
+            )
 
-# Show two Altair charts using `st.altair_chart`.
-st.write("")
-st.write("##### Ticket status per month")
-status_plot = (
-    alt.Chart(edited_df)
-    .mark_bar()
-    .encode(
-        x="month(Date Submitted):O",
-        y="count():Q",
-        xOffset="Status:N",
-        color="Status:N",
-    )
-    .configure_legend(
-        orient="bottom", titleFontSize=14, labelFontSize=14, titlePadding=5
-    )
-)
-st.altair_chart(status_plot, use_container_width=True, theme="streamlit")
+            # Show metrics side by side using `st.columns` and `st.metric`.
+            col1, col2, col3 = st.columns(3)
+            num_favor = len(st.session_state.stance_df[st.session_state.stance_df.stance == "Mendukung"])
+            num_against = len(st.session_state.stance_df[st.session_state.stance_df.stance == "Menentang"])
+            num_none = len(st.session_state.stance_df[st.session_state.stance_df.stance == "Netral"])
 
-st.write("##### Current ticket priorities")
-priority_plot = (
-    alt.Chart(edited_df)
-    .mark_arc()
-    .encode(theta="count():Q", color="Priority:N")
-    .properties(height=300)
-    .configure_legend(
-        orient="bottom", titleFontSize=14, labelFontSize=14, titlePadding=5
-    )
-)
-st.altair_chart(priority_plot, use_container_width=True, theme="streamlit")
+            col1.metric(label="**Jumlah Reply Mendukung**", value=num_favor)
+            col2.metric(label="**Jumlah Reply Menentang**", value=num_against)
+            col3.metric(label="**Jumlah Reply Netral**", value=num_none)
+
+            st.header('Statistik\n')
+
+            # Define the color conditions for the Job column
+            color = alt.Color('Stance:N',
+                scale=alt.Scale(domain=['Mendukung', 'Menentang', 'Netral'],
+                                range=['blue', 'red', 'green']),
+            )
+
+            status_plot = (
+                alt.Chart(show_df)
+                .mark_bar()
+                .encode(
+                    x="Stance:O",
+                    y=alt.Y('count():Q', axis=alt.Axis(title='Jumlah Reply')),
+                    # xOffset="Stance:N",
+                    color=color,
+                )
+                .configure_legend(
+                    orient="bottom", titleFontSize=14, labelFontSize=14, titlePadding=5
+                )
+            )
+            st.altair_chart(status_plot, use_container_width=True, theme="streamlit")
