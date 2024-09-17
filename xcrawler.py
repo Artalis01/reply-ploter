@@ -223,7 +223,7 @@ def login(sb, check_status=False):
         return True
 
 def logout():
-    with SB(headless=True, user_data_dir='/workspaces/reply-ploter/user/profile1') as sb:
+    with SB(headless=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
         sb.open("https://x.com/")
         sb.wait(3)
         if not sb.is_element_present('button[data-testid="SideNav_AccountSwitcher_Button"]'):
@@ -261,7 +261,7 @@ def get_replies_data(sb, pbar, tweet_replies):
 def xcrawl(url, pbar=None, check_login_status=False):    
     tweet_replies = []
     topic = []
-    with SB(headless=True, user_data_dir='/xcrawler/user/profile1') as sb:
+    with SB(headless=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
         if check_login_status:
             sb.open("https://x.com/")
             login_status = login(sb)
