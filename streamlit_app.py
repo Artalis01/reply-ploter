@@ -100,7 +100,8 @@ if submit_button:
         if url == "xclogout":
             xc.logout()
         elif url == "xclogin":
-            xc.xcrawl('https://x.com/', check_login_status=True)
+            # xc.xcrawl('https://x.com/', check_login_status=True)
+            pass
         elif re.match(r'^https:\/\/x\.com(?:\/\S*)?$', url):
             start_time = t.time()
             pbar = st.progress(0, text='Sedang memuat data')
