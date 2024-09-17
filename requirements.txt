@@ -6,4 +6,5 @@ nltk
 sastrawi
 scikit-learn
 chromium
-webdriver-manager
+webdriver_manager
+lxml
