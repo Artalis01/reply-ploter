@@ -261,7 +261,7 @@ def get_replies_data(sb, pbar, tweet_replies):
 def xcrawl(url, pbar=None, check_login_status=False):    
     tweet_replies = []
     topic = []
-    with SB(headless=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
+    with SB(headless=True, user_data_dir='/xcrawler/user/profile1') as sb:
         if check_login_status:
             sb.open("https://x.com/")
             login_status = login(sb)
