@@ -174,24 +174,23 @@ if 'empty_content' in st.session_state:
             st.info("Tidak ada reply dalam tweet")
 
         else:
-            # get most liked reply for each stance
+            # get and show the most liked reply for each stance
             favor_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Mendukung']
             against_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Menentang']
             none_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Netral']
-
-            liked_favor = favor_df.loc[favor_df['likes'].idxmax()]
-            liked_against = against_df.loc[against_df['likes'].idxmax()]
-            liked_none = none_df.loc[none_df['likes'].idxmax()]
-
-            # show most liked reply for each stance
+            
             st.header('Komentar Terfavorit')
-            if not len(liked_favor) < 1:
+
+            if len(favor_df) > 0:
+                liked_favor = favor_df.loc[favor_df['likes'].idxmax()]
                 st.markdown("**Mendukung:**")
                 st.info(liked_favor['content'])
-            if not len(liked_against) < 1:
+            if len(against_df) > 0:
+                liked_against = against_df.loc[against_df['likes'].idxmax()]
                 st.markdown("**Menentang:**")
                 st.error(liked_against['content'])
-            if not len(liked_none) < 1:
+            if len(none_df) > 0:
+                liked_none = none_df.loc[none_df['likes'].idxmax()]
                 st.markdown("**Netral:**")
                 st.success(liked_none['content'])
 
