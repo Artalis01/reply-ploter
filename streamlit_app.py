@@ -16,7 +16,7 @@ st.title("🎫 Repploter")
 st.write(
     """
     Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari sosial media X dengan
-    topik utama Pemilihan Umum Presiden Indonesia.
+    topik utama Pemilihan Umum Presiden Indonesia Tahun 2024.
     """
 )
 topic = []
@@ -179,7 +179,7 @@ if 'empty_content' in st.session_state:
             against_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Menentang']
             none_df = st.session_state.stance_df[st.session_state.stance_df['stance'] == 'Netral']
             
-            st.header('Komentar Terfavorit')
+            st.header('Komentar Terpopuler')
 
             if len(favor_df) > 0:
                 liked_favor = favor_df.loc[favor_df['likes'].idxmax()]
