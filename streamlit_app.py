@@ -184,7 +184,7 @@ if 'empty_content' in st.session_state:
             if len(favor_df) > 0:
                 liked_favor = favor_df.loc[favor_df['likes'].idxmax()]
                 st.markdown("**Mendukung:**")
-                st.info(liked_favor['content'])
+                st.success(liked_favor['content'])
             if len(against_df) > 0:
                 liked_against = against_df.loc[against_df['likes'].idxmax()]
                 st.markdown("**Menentang:**")
@@ -192,7 +192,7 @@ if 'empty_content' in st.session_state:
             if len(none_df) > 0:
                 liked_none = none_df.loc[none_df['likes'].idxmax()]
                 st.markdown("**Netral:**")
-                st.success(liked_none['content'])
+                st.info(liked_none['content'])
 
             # specify columns to be displayed
             columns_to_show = ['content', 'stance', 'date']
@@ -245,7 +245,7 @@ if 'empty_content' in st.session_state:
             # Define the color conditions for the Job column
             color = alt.Color('Stance:N',
                 scale=alt.Scale(domain=['Mendukung', 'Menentang', 'Netral'],
-                                range=['blue', 'red', 'green']),
+                                range=['green', 'red', 'blue']),
             )
 
             status_plot = (
