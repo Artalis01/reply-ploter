@@ -78,7 +78,7 @@ if 'stance_df' not in st.session_state:
     st.session_state.stance_df = stance_df
     st.session_state.topic = topic
 
-url = st.text_input('URL')
+url = st.text_input('Link URL Tweet')
 submit_button = st.button("Submit")
 
 if url != '':
@@ -90,7 +90,7 @@ if url != '':
         st.warning('"Pastikan Link URL sudah benar dan berasal dari sosial media X atau Twitter!"')
         st.text("Contoh Format URL:\n https://x.com/user/status/888xxxx")
 else:
-    st.info('Masukkan Link URL pada kolom yang disediakan')
+    st.info('Masukkan Link URL Tweet pada kolom yang disediakan')
 
 # in submit buttton add login function separate from xcrawl
 
