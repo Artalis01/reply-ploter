@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import scipy, nltk, joblib, re, copy
 
-# nltk.download('punkt')
-# nltk.download('punkt_tab')
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
 def normalize(dicts, topic=False):
     # clean and normalize text
