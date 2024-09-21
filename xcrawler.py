@@ -125,7 +125,7 @@ def get_replies(sb, tweet_replies):
             reply['date'] = reply_date[0]
             # reply['replies'] = reply_reply[0]
             # reply['reposts'] = reply_repost[0]
-            reply['likes'] = reply_like[0]
+            reply['likes'] = int(reply_like[0])
             # reply['views'] = reply_view[0]
 
             if len(reply_text) > 0:
