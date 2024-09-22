@@ -227,7 +227,7 @@ if 'empty_content' in st.session_state:
                 renamed_df,
                 use_container_width=True,
                 hide_index=True,
-                disabled=['Reply','Stance','Tanggal']
+                disabled=['Reply','Stance', 'Tanggal']
             )
 
             # Show metrics side by side using `st.columns` and `st.metric`.

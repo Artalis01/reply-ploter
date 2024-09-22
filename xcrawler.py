@@ -40,22 +40,35 @@ def is_button_exist(sb):
     # button_list = [button.text for button in buttons]
 
     for button in buttons:
-        if button.is_displayed() and is_element_visible(sb, button):
-            if ("Show more" in button.text) or ("Show" in button.text and "replies" not in button.text):
-                button.click()
-                sb.sleep(3)
-                button_exist = True
-                break
+        try:
+            if button.is_displayed() and is_element_visible(sb, button):
+                if ("Show more" in button.text) or ("Show" in button.text and "replies" not in button.text):
+                    button.click()
+                    sb.sleep(3)
+                    button_exist = True
+                    break
 
-        else: button_exist = False
+            else: button_exist = False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
     return button_exist
 
 def get_topic(sb):
     # Get a single post tweet as topic data
     tweet = {}
-
-    # Get element for each item
-    cell_inner_div = sb.find_element(By.XPATH, ".//div[@data-testid='cellInnerDiv']")
+    counter = 0
+    while counter < 2:
+        try:
+            # Get element for each item
+            cell_inner_div = sb.find_element(By.XPATH, ".//div[@data-testid='cellInnerDiv']")
+            break
+        except Exception as e:
+            if counter > 1:
+                st.error('Terjadi kesalahan pada server. Mohon coba kembali')
+                return None
+            print(f"An error occurred: {e}")
+            counter+=1
 
     tweet_userdatas = cell_inner_div.find_elements(By.XPATH, ".//div[@data-testid='User-Name']")
     tweet_dates = cell_inner_div.find_elements(By.XPATH, ".//time")
@@ -157,30 +170,31 @@ def scroll_replies(sb, pbar, tweet_replies, scrollPixels = 2450):
     button_exist = False
 
     while True:
-        media_counter = get_replies(sb, tweet_replies)
-        pbar.progress(int((4/11)*100), text=f'(4/11) Mengambil reply. Total Reply: {len(tweet_replies)}')
-        total_data = f"(2/4) Total Reply: {len(tweet_replies)}"
+        try:
+            media_counter = get_replies(sb, tweet_replies)
+            pbar.progress(int((4/11)*100), text=f'(4/11) Mengambil reply. Total Reply: {len(tweet_replies)}')
+            total_data = f"(2/4) Total Reply: {len(tweet_replies)}"
 
-        sb.execute_script(f"window.scrollTo(0, {scrollPixels});")
-        new_height = sb.execute_script("return document.body.scrollHeight")
-        sb.sleep(random.randrange(1,2))
-        if new_height-scrollPixels <1200 and scrollPixels < last_height:
-            button_exist = is_button_exist(sb)
-        elif new_height == last_height and scrollPixels > last_height:
-            button_exist = is_button_exist(sb)
-            if retried == False and button_exist==False:
-                retried = True
+            sb.execute_script(f"window.scrollTo(0, {scrollPixels});")
+            new_height = sb.execute_script("return document.body.scrollHeight")
+            sb.sleep(random.randrange(1,2))
+            if new_height-scrollPixels <1200 and scrollPixels < last_height:
+                button_exist = is_button_exist(sb)
+            elif new_height == last_height and scrollPixels > last_height:
+                button_exist = is_button_exist(sb)
+                if retried == False and button_exist==False:
+                    retried = True
+                    continue
+                elif retried == True:
+                    break
+            last_height = new_height
+            retried = False
+            if media_counter > 0:
+                scrollPixels = scrollPixels+1000+(media_counter*250)
                 continue
-            elif retried == True:
-                break
-        last_height = new_height
-        retried = False
-        if media_counter > 0:
-            scrollPixels = scrollPixels+1000+(media_counter*250)
-            continue
-        scrollPixels = scrollPixels+1000
-
-    # pbar.progress(int((4/11)*100), text=f'(4/11) Mengambil topik tweet. Total Reply: {len(tweet_replies)}')
+            scrollPixels = scrollPixels+1000
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 def login(sb, check_status=False):
     sb.wait(3)
@@ -278,6 +292,8 @@ def xcrawl(url, pbar=None, check_login_status=False):
             if not is_url_invalid(sb, pbar):
                 pbar.progress(int((3/11)*100), text='(3/11) Mengambil topik tweet')
                 topic = get_topic(sb)
+                if topic == None:
+                    return [None, None]
 
                 pbar.progress(int((4/11)*100), text='(4/11) Mengambil topik tweet')
                 get_replies_data(sb, pbar, tweet_replies)
