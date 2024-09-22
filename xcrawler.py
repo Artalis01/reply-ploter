@@ -58,6 +58,7 @@ def get_topic(sb):
     # Get a single post tweet as topic data
     tweet = {}
     counter = 0
+    cell_inner_div = None
     while counter < 2:
         try:
             # Get element for each item
