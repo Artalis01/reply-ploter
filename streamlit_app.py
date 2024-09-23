@@ -15,7 +15,7 @@ st.set_page_config(page_title="Repploter", page_icon="🎫")
 st.title("🎫 Repploter")
 st.write(
     """
-    Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari sosial media X dengan
+    Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari sosial media X atau Twitter dengan
     topik utama Pemilihan Umum Presiden Indonesia Tahun 2024.
     """
 )
