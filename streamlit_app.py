@@ -212,7 +212,7 @@ if 'empty_content' in st.session_state:
             # define column color for stance
             def highlight_stance(val):
                 if val == 'Mendukung':
-                    return 'background-color: rgba(0, 0, 255, 0.3); color: black'
+                    return 'background-color: rgba(0, 255, 0, 0.3); color: black'
                 if val == 'Menentang':
                     return 'background-color: rgba(255, 0, 0, 0.3); color: black'
                 return ''  # No color for other values
