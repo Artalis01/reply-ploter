@@ -50,7 +50,8 @@ def is_button_exist(sb):
 
             else: button_exist = False
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred: Button: {e}")
+            button_exist = False
 
     return button_exist
 
@@ -68,7 +69,7 @@ def get_topic(sb):
             if counter > 1:
                 st.error('Terjadi kesalahan pada server. Mohon coba kembali')
                 return None
-            print(f"An error occurred: {e}")
+            print(f"An error occurred: Get Topic: {e}")
             counter+=1
 
     tweet_userdatas = cell_inner_div.find_elements(By.XPATH, ".//div[@data-testid='User-Name']")
@@ -195,7 +196,7 @@ def scroll_replies(sb, pbar, tweet_replies, scrollPixels = 2450):
                 continue
             scrollPixels = scrollPixels+1000
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred: Scroll: {e}")
 
 def login(sb, check_status=False):
     sb.wait(3)
