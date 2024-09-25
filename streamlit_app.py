@@ -15,8 +15,8 @@ st.set_page_config(page_title="Repploter", page_icon="🎫")
 st.title("🎫 Repploter")
 st.write(
     """
-    Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari sosial media X atau Twitter dengan
-    topik utama Pemilihan Umum Presiden Indonesia Tahun 2024.
+    Aplikasi ini dapat menampilkan grafik distribusi stance reply atau komentar dari platform sosial media Twitter yang sekarang berganti
+    nama menjadi X dengan topik utama Pemilihan Umum Presiden Indonesia Tahun 2024.
     """
 )
 topic = []
@@ -91,8 +91,6 @@ if url != '':
         st.text("Contoh Format URL:\n https://x.com/user/status/888xxxx")
 else:
     st.info('Masukkan Link URL Tweet pada kolom yang disediakan')
-
-# in submit buttton add login function separate from xcrawl
 
 # Action on button press
 if submit_button:
@@ -198,7 +196,7 @@ if 'empty_content' in st.session_state:
             columns_to_show = ['content', 'stance', 'date']
 
             renamed_columns = {
-                'content': 'Reply',
+                'content': 'Komentar',
                 'stance': 'Stance',
                 'date': 'Tanggal',
             }
@@ -206,8 +204,8 @@ if 'empty_content' in st.session_state:
             renamed_df = st.session_state.stance_df[columns_to_show].rename(columns=renamed_columns)
 
             # Show reply list
-            st.header('Daftar Reply')
-            st.write(f"Total Reply: `{len(st.session_state.stance_df)}`")
+            st.header('Daftar Komentar')
+            st.write(f"Total Komentar: `{len(st.session_state.stance_df)}`")
 
             # define column color for stance
             def highlight_stance(val):
@@ -227,7 +225,7 @@ if 'empty_content' in st.session_state:
                 renamed_df,
                 use_container_width=True,
                 hide_index=True,
-                disabled=['Reply','Stance', 'Tanggal']
+                disabled=['Komentar','Stance', 'Tanggal']
             )
 
             # Show metrics side by side using `st.columns` and `st.metric`.
@@ -236,9 +234,9 @@ if 'empty_content' in st.session_state:
             num_against = len(st.session_state.stance_df[st.session_state.stance_df.stance == "Menentang"])
             num_none = len(st.session_state.stance_df[st.session_state.stance_df.stance == "Netral"])
 
-            col1.metric(label="**Jumlah Reply Mendukung**", value=num_favor)
-            col2.metric(label="**Jumlah Reply Menentang**", value=num_against)
-            col3.metric(label="**Jumlah Reply Netral**", value=num_none)
+            col1.metric(label="**Jumlah Komentar Mendukung**", value=num_favor)
+            col2.metric(label="**Jumlah Komentar Menentang**", value=num_against)
+            col3.metric(label="**Jumlah Komentar Netral**", value=num_none)
 
             st.header('Statistik\n')
 
@@ -253,7 +251,7 @@ if 'empty_content' in st.session_state:
                 .mark_bar()
                 .encode(
                     x="Stance:O",
-                    y=alt.Y('count():Q', axis=alt.Axis(title='Jumlah Reply')),
+                    y=alt.Y('count():Q', axis=alt.Axis(title='Jumlah Komentar')),
                     # xOffset="Stance:N",
                     color=color,
                 )

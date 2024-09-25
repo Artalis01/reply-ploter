@@ -109,10 +109,7 @@ def get_replies(sb, tweet_replies):
         reply_dates = reply_cell.find_elements(By.XPATH, ".//time")
         reply_texts = reply_cell.find_elements(By.XPATH, ".//div[@data-testid='tweetText']")
         reply_urls = reply_cell.find_elements(By.XPATH, ".//a[contains(@href, 'status') and not(contains(@href, 'analytic')) and not(contains(@href, 'photo')) and not(contains(@href, 'media_tag'))]")
-        # reply_replies = reply_cell.find_elements(By.XPATH, ".//button[@data-testid = 'reply']")
-        # reply_reposts = reply_cell.find_elements(By.XPATH, ".//button[@data-testid = 'retweet']")
         reply_likes = reply_cell.find_elements(By.XPATH, ".//button[@data-testid = 'like']")
-        # reply_views = reply_cell.find_elements(By.XPATH, ".//a[contains(@href, 'analytics')]")
 
         reply_userdata = [element.text for element in reply_userdatas]
         if len(reply_userdata) > 0:
@@ -120,28 +117,18 @@ def get_replies(sb, tweet_replies):
         reply_date = [element.text for element in reply_dates]
         reply_text = [element.text for element in reply_texts]
         reply_url = [element.get_attribute('href') for element in reply_urls]
-        # reply_reply = [element.get_attribute('aria-label') for element in reply_replies]
-        # reply_repost = [element.get_attribute('aria-label') for element in reply_reposts]
         reply_like = [element.get_attribute('aria-label') for element in reply_likes]
-        # reply_view = [element.get_attribute('aria-label') for element in reply_views]
 
-        # reply_reply = get_num_value(reply_reply)
-        # reply_repost = get_num_value(reply_repost)
         reply_like = get_num_value(reply_like)
-        # reply_view = get_num_value(reply_view)
 
         if len(reply_url)>0: # and len(reply_view)>0:
             if "2023" not in reply_date[0]:
                 reply_date[0] = reply_date[0]+", 2024"
-            # reply['urlbase'] = sb.get_current_url()
             reply['url'] = reply_url[0]
             reply['name'] = reply_user[0]
             reply['username'] = reply_user[1]
             reply['date'] = reply_date[0]
-            # reply['replies'] = reply_reply[0]
-            # reply['reposts'] = reply_repost[0]
             reply['likes'] = int(reply_like[0])
-            # reply['views'] = reply_view[0]
 
             if len(reply_text) > 0:
                 reply['content'] = reply_text[0].replace("\n", r". ")
@@ -153,11 +140,7 @@ def get_replies(sb, tweet_replies):
                 if reply['url'] != sb.get_current_url():
                     if reply['content'] != 'image/video':
                         tweet_replies.append(reply)
-
-                    # print("URL".ljust(10, "=")+">", reply_url)
-                    # print("Username".ljust(10, "=")+">", reply_user)
-                    # print("Detail".ljust(10, "=")+">[", reply_reply, reply_repost, reply_like, reply_view, "]")
-                    # print("Content".ljust(10, "=")+">", reply['content'])
+                    
             else:
                 continue
         else:
@@ -174,8 +157,7 @@ def scroll_replies(sb, pbar, tweet_replies, scrollPixels = 2450):
     while True:
         try:
             media_counter = get_replies(sb, tweet_replies)
-            pbar.progress(int((4/11)*100), text=f'(4/11) Mengambil reply. Total Reply: {len(tweet_replies)}')
-            total_data = f"(2/4) Total Reply: {len(tweet_replies)}"
+            pbar.progress(int((4/11)*100), text=f'(4/11) Mengambil komentar. Total komentar: {len(tweet_replies)}')
 
             sb.execute_script(f"window.scrollTo(0, {scrollPixels});")
             new_height = sb.execute_script("return document.body.scrollHeight")
