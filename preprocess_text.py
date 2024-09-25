@@ -132,22 +132,8 @@ def extract_cosine_similarity(topics, replies):
 
     return cos_sim_array
 
-def extract_word_overlap(topics, replies):
-    word_overlap = []
-    for i, (topic, reply) in tqdm(enumerate(zip(topics, replies))):
-        preprocessed_topic = [t for t in nltk.word_tokenize(topic)]
-        preprocessed_reply = [t for t in nltk.word_tokenize(reply)]
-        
-        # Lenght of common words b/w topic and reply / Length of all the words of topic & reply
-        features = len(set(preprocessed_reply).intersection(preprocessed_topic)) / float(len(set(preprocessed_reply).union(preprocessed_topic)))
-        word_overlap.append(features)
-        
-        # Convert the list to a sparse matrix (in order to concatenate the cos sim with other features)
-        word_overlap_sparse = scipy.sparse.coo_matrix(np.array(word_overlap)) 
-    return word_overlap_sparse
-
-def combine_features(tfidf_vectors, cosine_similarity, word_overlap):
-    combined_features =  sparse.bmat([[tfidf_vectors, word_overlap.T, cosine_similarity.toarray()]])
+def combine_features(tfidf_vectors, cosine_similarity): #, word_overlap):
+    combined_features =  sparse.bmat([[tfidf_vectors, cosine_similarity.toarray()]]) 
     return combined_features
 
 def extract_features(topic, replies):
@@ -160,11 +146,8 @@ def extract_features(topic, replies):
     # extract cosine similarity
     cosim = extract_cosine_similarity(content_topics, content_replies)
 
-    # extract word overlap
-    word_overlap = extract_word_overlap(content_topics, content_replies)
-
     # combine features
-    features = combine_features(tfidf_vectors, cosim, word_overlap)
+    features = combine_features(tfidf_vectors, cosim)
 
     return features
 
