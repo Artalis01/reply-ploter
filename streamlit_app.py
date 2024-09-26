@@ -210,9 +210,9 @@ if 'empty_content' in st.session_state:
             # define column color for stance
             def highlight_stance(val):
                 if val == 'Mendukung':
-                    return 'background-color: rgba(0, 255, 0, 0.3); color: black'
+                    return 'background-color: rgba(0, 255, 0, 0.4); color: black'
                 if val == 'Menentang':
-                    return 'background-color: rgba(255, 0, 0, 0.3); color: black'
+                    return 'background-color: rgba(255, 0, 0, 0.4); color: black'
                 return ''  # No color for other values
 
             styled_df = renamed_df.style.map(highlight_stance, subset=['Stance'])
@@ -222,11 +222,12 @@ if 'empty_content' in st.session_state:
 
             # Show the replies dataframe
             show_df = st.data_editor(
-                renamed_df,
+                styled_df,
                 use_container_width=True,
                 hide_index=True,
                 disabled=['Komentar','Stance', 'Tanggal']
             )
+            st.header('Statistik\n')
 
             # Show metrics side by side using `st.columns` and `st.metric`.
             col1, col2, col3 = st.columns(3)
@@ -237,8 +238,6 @@ if 'empty_content' in st.session_state:
             col1.metric(label="**Jumlah Komentar Mendukung**", value=num_favor)
             col2.metric(label="**Jumlah Komentar Menentang**", value=num_against)
             col3.metric(label="**Jumlah Komentar Netral**", value=num_none)
-
-            st.header('Statistik\n')
 
             # Define the color conditions for the Job column
             color = alt.Color('Stance:N',
