@@ -84,8 +84,10 @@ def get_topic(sb):
         tweet_user = tweet_userdata[0].split('\n')
     tweet_date = [element.text for element in tweet_dates]
     tweet_text = [element.text for element in tweet_texts]
+    tweet_url = [element.get_attribute('href') for element in tweet_urls]
 
-    if len(tweet_text)>0:
+    if len(tweet_url)>0 and len(tweet_text)>0:
+        tweet['url'] = tweet_url[0]
         tweet['name'] = tweet_user[0]
         tweet['username'] = tweet_user[1]
         tweet['date'] = tweet_date[0]
