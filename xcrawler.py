@@ -75,7 +75,6 @@ def get_topic(sb):
     tweet_userdatas = cell_inner_div.find_elements(By.XPATH, ".//div[@data-testid='User-Name']")
     tweet_dates = cell_inner_div.find_elements(By.XPATH, ".//time")
     tweet_texts = cell_inner_div.find_elements(By.XPATH, ".//div[@data-testid='tweetText']")
-    tweet_urls = cell_inner_div.find_elements(By.XPATH, ".//a[contains(@href, 'status') and not(contains(@href, 'analytic')) and not(contains(@href, 'photo')) and not(contains(@href, 'media_tag'))]")
 
     # Get all data from all elements
     # split username and user nickname
@@ -84,10 +83,8 @@ def get_topic(sb):
         tweet_user = tweet_userdata[0].split('\n')
     tweet_date = [element.text for element in tweet_dates]
     tweet_text = [element.text for element in tweet_texts]
-    tweet_url = [element.get_attribute('href') for element in tweet_urls]
 
     if len(tweet_url)>0 and len(tweet_text)>0:
-        tweet['url'] = tweet_url[0]
         tweet['name'] = tweet_user[0]
         tweet['username'] = tweet_user[1]
         tweet['date'] = tweet_date[0]
