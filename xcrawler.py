@@ -66,7 +66,7 @@ def get_topic(sb):
             cell_inner_div = sb.find_element(By.XPATH, ".//div[@data-testid='cellInnerDiv']")
             break
         except Exception as e:
-            if counter > 1:
+            if counter >= 1:
                 st.error('Terjadi kesalahan pada server. Mohon coba kembali')
                 return None
             print(f"An error occurred: Get Topic: {e}")
