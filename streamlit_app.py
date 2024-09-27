@@ -208,21 +208,22 @@ if 'empty_content' in st.session_state:
             st.write(f"Total Komentar: `{len(st.session_state.stance_df)}`")
 
             # define column color for stance
-            def highlight_stance(val):
-                if val == 'Mendukung':
-                    return 'background-color: rgba(0, 255, 0, 0.4); color: black'
-                if val == 'Menentang':
-                    return 'background-color: rgba(255, 0, 0, 0.4); color: black'
-                return ''  # No color for other values
+            def highlight_stance(row):
+                if row['Stance'] == 'Mendukung':
+                    return ['background-color: rgba(0, 255, 0, 0.3); color: black']*len(row)
+                if row['Stance'] == 'Menentang':
+                    return ['background-color: rgba(255, 0, 0, 0.3); color: black']*len(row)
+                return ['']*len(row)  # No color for other values
 
-            styled_df = renamed_df.style.map(highlight_stance, subset=['Stance'])
+            # styled_df = renamed_df.style.map(highlight_stance, subset=['Stance'])
+            styled_df = renamed_df.style.apply(highlight_stance, axis=1)
 
             # show dataframe
             # st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
             # Show the replies dataframe
             show_df = st.data_editor(
-                styled_df,
+                renamed_df,
                 use_container_width=True,
                 hide_index=True,
                 disabled=['Komentar','Stance', 'Tanggal']
