@@ -60,13 +60,13 @@ def get_topic(sb):
     tweet = {}
     counter = 0
     cell_inner_div = None
-    while counter < 2:
+    while counter < 5:
         try:
             # Get element for each item
             cell_inner_div = sb.find_element(By.XPATH, ".//div[@data-testid='cellInnerDiv']")
             break
         except Exception as e:
-            if counter >= 1:
+            if counter >= 4:
                 st.error('Terjadi kesalahan pada server. Mohon coba kembali')
                 return None
             print(f"An error occurred: Get Topic: {e}")
@@ -158,7 +158,7 @@ def scroll_replies(sb, pbar, tweet_replies, scrollPixels = 2450):
 
             sb.execute_script(f"window.scrollTo(0, {scrollPixels});")
             new_height = sb.execute_script("return document.body.scrollHeight")
-            sb.sleep(random.randrange(1,2))
+            sb.sleep(round(random.uniform(0, 1), 2))
             if new_height-scrollPixels <1200 and scrollPixels < last_height:
                 button_exist = is_button_exist(sb)
             elif new_height == last_height and scrollPixels > last_height:
@@ -276,7 +276,7 @@ def xcrawl(url, pbar=None, check_login_status=False):
                 if topic == None:
                     return [None, None]
 
-                pbar.progress(int((4/11)*100), text='(4/11) Mengambil topik tweet')
+                pbar.progress(int((4/11)*100), text='(4/11) Mengambil komentar tweet')
                 get_replies_data(sb, pbar, tweet_replies)
 
                 if len(tweet_replies) < 1:
