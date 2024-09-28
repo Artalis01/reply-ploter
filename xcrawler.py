@@ -258,12 +258,9 @@ def xcrawl(url, pbar=None, check_login_status=False):
     tweet_replies = []
     topic = []
 
-    # Use the `/tmp` directory in Streamlit to avoid permission issues
-    driver_dir = "/tmp"  # Custom directory to store the downloaded drivers
-    os.environ["WDM_LOCAL"] = "1"  # Ensure drivers are stored locally
-    os.environ["WDM_CACHE_DIR"] = driver_dir  # Set the cache directory for the driver
-    
-    with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1', environment="local") as sb:
+    settings_path = "settings.py"
+
+    with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1', settings_file=settings_path) as sb:
         if check_login_status:
             sb.open("https://x.com/")
             login_status = login(sb)
