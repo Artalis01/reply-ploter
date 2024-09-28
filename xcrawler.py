@@ -263,7 +263,7 @@ def xcrawl(url, pbar=None, check_login_status=False):
     os.environ["WDM_LOCAL"] = "1"  # Ensure drivers are stored locally
     os.environ["WDM_CACHE_DIR"] = driver_dir  # Set the cache directory for the driver
     
-    with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
+    with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1', environment="local") as sb:
         if check_login_status:
             sb.open("https://x.com/")
             login_status = login(sb)
