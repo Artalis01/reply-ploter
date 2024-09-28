@@ -256,14 +256,14 @@ def get_replies_data(sb, pbar, tweet_replies):
 def xcrawl(url, pbar=None, check_login_status=False):    
     tweet_replies = []
     topic = []
-    with SB(headless=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
+    with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
         if check_login_status:
             sb.open("https://x.com/")
             login_status = login(sb)
             if login_status:
                 st.info("Login Sukses!")
         else:
-            sb.open(url)
+            sb.uc_open_with_reconnect(url, 2)
             pbar.progress(int((2/11)*100), text='Sedang mempersiapkan data')
             login_status = login(sb, check_status=True)
 

@@ -6,3 +6,4 @@ nltk
 sastrawi
 scikit-learn
 webdriver-manager
+undetected-chromedriver
