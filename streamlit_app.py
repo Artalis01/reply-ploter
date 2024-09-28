@@ -102,7 +102,7 @@ if submit_button:
             pass
         elif re.match(r'^https:\/\/x\.com(?:\/\S*)?$', url):
             start_time = t.time()
-            pbar = st.progress(0, text='Sedang memuat data')
+            pbar = st.progress(0, text='(1/11) Sedang memuat data')
             topic, tweet_replies = xc.xcrawl(url, pbar)
 
             if topic != None:
