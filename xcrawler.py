@@ -3,6 +3,7 @@ from seleniumbase import SB
 import streamlit as st
 import app_auth as auth
 import time as t
+import os
 import random
 import re
 
@@ -256,6 +257,12 @@ def get_replies_data(sb, pbar, tweet_replies):
 def xcrawl(url, pbar=None, check_login_status=False):    
     tweet_replies = []
     topic = []
+
+    # Use the `/tmp` directory in Streamlit to avoid permission issues
+    driver_dir = "/tmp"  # Custom directory to store the downloaded drivers
+    os.environ["WDM_LOCAL"] = "1"  # Ensure drivers are stored locally
+    os.environ["WDM_CACHE_DIR"] = driver_dir  # Set the cache directory for the driver
+    
     with SB(headless=True, uc=True, user_data_dir='resources/xcrawler/user/profile1') as sb:
         if check_login_status:
             sb.open("https://x.com/")
